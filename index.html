@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clima Ultra Max</title>
+</head>
+
+<body style="background:#0f172a; display:flex; justify-content:center; align-items:center; height:100vh; margin:0;">
+
+<div id="weather-ultra">
+
+<style>
+#weather-ultra {
+  width: 100%;
+  max-width: 300px;
+  border-radius: 28px;
+  padding: 20px;
+  color: white;
+  font-family: -apple-system, sans-serif;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(30px);
+  box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+}
+
+/* fondos dinámicos */
+.day { background: linear-gradient(160deg,#4facfe,#00f2fe); }
+.sunset { background: linear-gradient(160deg,#ff9966,#ff5e62); }
+.night { background: linear-gradient(160deg,#141e30,#243b55); }
+
+/* estrellas */
+.stars span {
+  position:absolute;
+  width:2px;height:2px;
+  background:white;
+  opacity:.6;
+  border-radius:50%;
+  animation: twinkle 2s infinite alternate;
+}
+@keyframes twinkle { from{opacity:.2} to{opacity:1} }
+
+/* lluvia global */
+.rain-bg span {
+  position:absolute;
+  width:2px;height:15px;
+  background:#aeefff;
+  animation: rain 1s linear infinite;
+}
+@keyframes rain {
+  from{transform:translateY(-20px);opacity:1}
+  to{transform:translateY(300px);opacity:0}
+}
+
+/* relámpago pantalla */
+.flash {
+  position:absolute;
+  inset:0;
+  background:white;
+  opacity:0;
+  pointer-events:none;
+}
+.flash.active {
+  animation: flashAnim .3s;
+}
+@keyframes flashAnim {
+  0%{opacity:0}
+  50%{opacity:.8}
+  100%{opacity:0}
+}
+
+/* iconos */
+.sun {
+  width:45px;height:45px;
+  background: radial-gradient(circle,#fff176,#fbc02d);
+  border-radius:50%;
+  margin:auto;
+  box-shadow:0 0 25px rgba(255,255,0,.6);
+}
+
+.cloud {
+  width:45px;height:22px;
+  background:white;
+  border-radius:20px;
+  margin:auto;
+  position:relative;
+  animation: wind 4s ease-in-out infinite;
+}
+@keyframes wind {
+  0%,100%{transform:translateX(0)}
+  50%{transform:translateX(5px)}
+}
+
+.cloud::after {
+  content:"";
+  position:absolute;
+  top:-8px;
+  left:10px;
+  width:25px;
+  height:25px;
+  background:white;
+  border-radius:50%;
+}
+
+.rain {
+  position:relative;
+  width:40px;height:40px;
+}
+.rain::before {
+  content:"";
+  position:absolute;
+  width:2px;height:10px;
+  background:#aeefff;
+  animation: rain 0.7s infinite;
+}
+
+.storm {
+  position:relative;
+}
+.storm::before {
+  content:"";
+  position:absolute;
+  width:3px;height:20px;
+  background:yellow;
+  left:18px;top:15px;
+}
+
+/* texto */
+.temp { font-size:48px;font-weight:600 }
+.current{text-align:center}
+
+.extra{
+  display:flex;
+  justify-content:space-around;
+  font-size:12px;
+  margin-top:8px;
+}
+
+/* semana */
+.week{
+  display:flex;
+  justify-content:space-between;
+  margin-top:20px;
+}
+.dayItem{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  font-size:11px;
+  height:85px;
+}
+.dayItem span:last-child{
+  margin-top:auto;
+  font-weight:600;
+}
+</style>
+
+<div class="flash" id="flash"></div>
+<div class="stars" id="stars"></div>
+<div class="rain-bg" id="rainbg"></div>
+
+<div class="current">
+  <h3>Bandera (Santiago del Estero)</h3>
+  <p id="date"></p>
+  <div id="icon"></div>
+  <div class="temp" id="temp"></div>
+  <p id="desc"></p>
+
+  <div class="extra">
+    <span id="wind"></span>
+    <span id="humidity"></span>
+  </div>
+</div>
+
+<div class="week" id="week"></div>
+
+<script>
+(function(){
+
+const lat=-28.8833, lon=-62.2667;
+const days=["D","L","M","M","J","V","S"];
+let currentCode=0;
+
+/* iconos */
+function icon(code){
+  if(code===0)return `<div class="sun"></div>`;
+  if(code>=95)return `<div class="storm"><div class="cloud"></div><div class="rain"></div></div>`;
+  if(code>=51)return `<div><div class="cloud"></div><div class="rain"></div></div>`;
+  return `<div class="cloud"></div>`;
+}
+
+function desc(code){
+  if(code===0)return"Despejado";
+  if(code>=95)return"Tormenta";
+  if(code>=51)return"Lluvia";
+  return"Nublado";
+}
+
+/* clima */
+async function load(){
+const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&daily=weathercode,temperature_2m_max,temperature_2m_min&hourly=relativehumidity_2m&timezone=auto`);
+const d=await r.json();
+
+const c=d.current_weather;
+currentCode=c.weathercode;
+
+temp.innerText=Math.round(c.temperature)+"°C";
+descEl.innerText=desc(c.weathercode);
+iconEl.innerHTML=icon(c.weathercode);
+
+wind.innerText="💨 "+c.windspeed+" km/h";
+humidity.innerText="💧 "+d.hourly.relativehumidity_2m[0]+"%";
+
+/* semana */
+week.innerHTML="";
+for(let i=0;i<7;i++){
+let el=document.createElement("div");
+el.className="dayItem";
+let di=(new Date().getDay()+i)%7;
+
+el.innerHTML=`
+<span>${i===0?"HOY":days[di]}</span>
+${icon(d.daily.weathercode[i])}
+<span>${Math.round(d.daily.temperature_2m_max[i])}°/${Math.round(d.daily.temperature_2m_min[i])}°</span>
+`;
+week.appendChild(el);
+}
+
+updateFX();
+}
+
+/* efectos dinámicos */
+function updateFX(){
+
+rainbg.innerHTML="";
+
+if(currentCode>=51){
+  for(let i=0;i<40;i++){
+    let drop=document.createElement("span");
+    drop.style.left=Math.random()*100+"%";
+    drop.style.animationDuration=(0.5+Math.random())+"s";
+    rainbg.appendChild(drop);
+  }
+}
+
+if(currentCode>=95){
+  setInterval(()=>{
+    flash.classList.add("active");
+    setTimeout(()=>flash.classList.remove("active"),200);
+  },3000);
+}
+}
+
+/* fondo dinámico */
+function updateTime(){
+const h=new Date().getHours();
+const w=document.getElementById("weather-ultra");
+
+w.classList.remove("day","night","sunset");
+
+if(h>=6&&h<18)w.classList.add("day");
+else if(h>=18&&h<20)w.classList.add("sunset");
+else w.classList.add("night");
+
+date.innerText=new Date().toLocaleString();
+}
+
+/* estrellas */
+for(let i=0;i<30;i++){
+let s=document.createElement("span");
+s.style.left=Math.random()*100+"%";
+s.style.top=Math.random()*100+"%";
+stars.appendChild(s);
+}
+
+/* refs */
+const temp=document.getElementById("temp");
+const descEl=document.getElementById("desc");
+const iconEl=document.getElementById("icon");
+const wind=document.getElementById("wind");
+const humidity=document.getElementById("humidity");
+const week=document.getElementById("week");
+const rainbg=document.getElementById("rainbg");
+const flash=document.getElementById("flash");
+const stars=document.getElementById("stars");
+const date=document.getElementById("date");
+
+/* init */
+load();
+updateTime();
+
+setInterval(load,60000);
+setInterval(updateTime,1000);
+
+})();
+</script>
+
+</div>
+
+</body>
+</html>
