@@ -3,27 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clima Bandera Pro - Alertas y Niebla</title>
+    <title>Clima Bandera Pro - Full</title>
 </head>
 <body style="background: #1a1a1a; display: flex; justify-content: center; padding: 20px; margin: 0;">
 
 <div id="weather-pro">
   <style>
     #weather-pro {
-      width: 100%; max-width: 320px; height: 430px;
+      width: 100%; max-width: 320px; height: 500px; /* Altura optimizada */
       border-radius: 25px; padding: 20px; color: white;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       position: relative; overflow: hidden; backdrop-filter: blur(20px);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.5); display: flex; flex-direction: column;
-      box-sizing: border-box; transition: all 1.2s ease;
+      
+      /* 💎 BORDE DE CRISTAL */
+      border: 1.5px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5); 
+      
+      display: flex; flex-direction: column;
+      box-sizing: border-box; transition: all 1s ease;
     }
 
-    /* ESTADOS DE FONDO */
     #weather-pro.day { background: linear-gradient(160deg, #56ccf2, #2f80ed); }
     #weather-pro.night { background: linear-gradient(160deg, #0f2027, #203a43, #2c5364); }
-    #weather-pro.foggy { background: linear-gradient(160deg, #757f9a, #d7dde8); color: #333; }
-    #weather-pro.foggy .min-max-main, #weather-pro.foggy .day-label, #weather-pro.foggy #date { color: #444; }
+    #weather-pro.foggy { background: linear-gradient(160deg, #757f9a, #d7dde8); color: #333; border-color: rgba(0,0,0,0.1); }
+    #weather-pro.foggy .min-max-main, #weather-pro.foggy .day-label, #weather-pro.foggy #date, #weather-pro.foggy .alert-stable { color: #444; }
     #weather-pro.foggy svg { fill: #444; }
+
+    /* 🌙 LUNA */
+    .moon {
+      width: 35px; height: 35px; background: transparent; border-radius: 50%;
+      box-shadow: 9px 9px 0 0 #f1f1f1; transform: rotate(-20deg) translateX(-8px);
+      margin-bottom: 10px;
+    }
 
     .lightning-flash {
       position: absolute; inset: 0; background: rgba(255,255,255,0.3);
@@ -35,7 +46,7 @@
     }
 
     .particles {
-      position: absolute; top: 0; left: 0; width: 100%; height: 380px;
+      position: absolute; top: 0; left: 0; width: 100%; height: 350px;
       overflow: hidden; z-index: 1; pointer-events: none;
     }
     .particles span { position: absolute; opacity: 0.5; background: white; border-radius: 50%; }
@@ -45,19 +56,19 @@
 
     .current { text-align: center; z-index: 2; position: relative; flex: 1; }
     .temp-main { font-size: 50px; font-weight: 700; margin: 5px 0; }
-    .min-max-main { font-size: 14px; opacity: 0.9; margin-bottom: 10px; }
+    .min-max-main { font-size: 14px; opacity: 0.9; margin-bottom: 8px; }
     
     .wind-info { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; }
     .wind-arrow { width: 14px; height: 14px; fill: white; transition: transform 0.6s ease; }
 
-    /* ALERTA */
+    /* ⚠ ALERTAS MEJORADAS */
     #alert-box {
       font-size: 10px; font-weight: 800; text-transform: uppercase;
-      margin-top: 4px; letter-spacing: 1px; transition: color 0.5s;
+      margin-top: 8px; letter-spacing: 0.5px; transition: color 0.5s;
     }
-    .alert-active { color: #ffeb3b; animation: pulseAlert 2s infinite; }
-    .alert-stable { color: rgba(255,255,255,0.5); }
-    @keyframes pulseAlert { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    .alert-active { color: #ffeb3b; animation: pulseAlert 2s infinite; text-shadow: 0 0 5px rgba(0,0,0,0.3); }
+    .alert-stable { color: rgba(255,255,255,0.4); }
+    @keyframes pulseAlert { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
 
     .week { 
       display: flex; justify-content: space-between; margin-top: auto; 
@@ -65,7 +76,7 @@
       z-index: 2; position: relative;
     }
     .day-col { display: flex; flex-direction: column; align-items: center; flex: 1; gap: 2px; }
-    .icon-box { height: 50px; width: 50px; display: flex; align-items: center; justify-content: center; position: relative; transform: scale(0.9); }
+    .icon-box { height: 45px; width: 45px; display: flex; align-items: center; justify-content: center; position: relative; transform: scale(0.85); }
 
     .sun { width: 38px; height: 38px; background: radial-gradient(circle, #fff176, #fbc02d); border-radius: 50%; box-shadow: 0 0 20px rgba(255,255,0,0.5); animation: sunPulse 5s infinite; }
     @keyframes sunPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
@@ -107,14 +118,16 @@
       const lat = -28.8833, lon = -62.2667;
       const days = ["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
 
-      function getIconHtml(code){
+      function getIconHtml(code, isNight){
         const rain = `<div class="rain-container"><div class="rain-drop" style="animation-delay:0.1s"></div><div class="rain-drop" style="animation-delay:0.3s"></div><div class="rain-drop" style="animation-delay:0.5s"></div></div>`;
         const bolt = `<svg class="bolt-svg" viewBox="0 0 24 24"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>`;
 
-        if(code === 0) return `<div class="icon-box"><div class="sun"></div></div>`;
-        if(code >= 95) return `<div class="icon-box"><div class="cloud"></div>${rain}${bolt}</div>`;
-        if(code >= 51) return `<div class="icon-box"><div class="cloud"></div>${rain}</div>`;
-        return `<div class="icon-box"><div class="cloud"></div></div>`;
+        if(code === 0) {
+          return isNight ? `<div class="icon-box"><div class="moon"></div></div>` : `<div class="icon-box"><div class="sun"></div></div>`;
+        }
+        if(code >= 95) return `<div class="icon-box"><div class="cloud" ${isNight?'style="background:#ccc"':''}></div>${rain}${bolt}</div>`;
+        if(code >= 51) return `<div class="icon-box"><div class="cloud" ${isNight?'style="background:#ccc"':''}></div>${rain}</div>`;
+        return `<div class="icon-box"><div class="cloud" ${isNight?'style="background:#ccc"':''}></div></div>`;
       }
 
       async function updateWeather(){
@@ -122,49 +135,42 @@
           const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=auto`);
           const data = await res.json();
           const c = data.current_weather;
+          const h = new Date().getHours();
+          const isNight = h < 6 || h >= 19;
 
           document.getElementById("temp").innerText = Math.round(c.temperature) + "°";
           document.getElementById("min-max").innerText = `Mín: ${Math.round(data.daily.temperature_2m_min[0])}° • Máx: ${Math.round(data.daily.temperature_2m_max[0])}°`;
           document.getElementById("wind-speed").innerText = Math.round(c.windspeed) + " km/h";
           document.getElementById("wind-dir").style.transform = `rotate(${c.winddirection}deg)`;
-          document.getElementById("main-icon").innerHTML = getIconHtml(c.weathercode);
+          document.getElementById("main-icon").innerHTML = getIconHtml(c.weathercode, isNight);
 
-          // LOGICA DE ALERTAS
+          // ⚠ LÓGICA DE ALERTA REAL
           const alertBox = document.getElementById("alert-box");
-          if(c.windspeed > 45 || c.weathercode >= 95) {
-            alertBox.innerText = "⚠ Alerta Meteorológica";
-            alertBox.className = "alert-active";
-          } else {
-            alertBox.innerText = "Condiciones estables";
-            alertBox.className = "alert-stable";
-          }
+          let isA = false;
+          if(c.weathercode >= 95) { alertBox.innerText = "⚠ Alerta: Tormenta"; isA = true; }
+          else if(c.windspeed > 50) { alertBox.innerText = "⚠ Alerta: Viento Fuerte"; isA = true; }
+          else if(c.temperature > 40) { alertBox.innerText = "⚠ Alerta: Calor Extremo"; isA = true; }
+          else if(c.temperature < 0) { alertBox.innerText = "⚠ Alerta: Helada"; isA = true; }
+          else { alertBox.innerText = "Condiciones estables"; }
+          alertBox.className = isA ? "alert-active" : "alert-stable";
 
-          // LOGICA DE NIEBLA Y FONDOS
+          // NIEBLA Y FONDOS
           const card = document.getElementById("weather-pro");
-          const h = new Date().getHours();
           card.classList.remove('day', 'night', 'foggy');
+          if(c.weathercode === 45 || c.weathercode === 48) card.classList.add('foggy');
+          else card.classList.add(isNight ? 'night' : 'day');
 
-          if(c.weathercode === 45 || c.weathercode === 48) {
-            card.classList.add('foggy');
-          } else {
-            card.classList.add((h >= 6 && h < 19) ? 'day' : 'night');
-          }
-
-          // PARTÍCULAS
+          // PARTÍCULAS SENSORIALES
           const pCont = document.getElementById("particles");
           pCont.innerHTML = "";
-          const isRaining = c.weathercode >= 51;
-          const isFoggy = c.weathercode === 45 || c.weathercode === 48;
-
           for(let i=0; i<25; i++){
             let s = document.createElement("span");
             s.style.left = Math.random()*100+"%";
-            if(isRaining){
+            if(c.weathercode >= 51){
               s.style.width="1px"; s.style.height="15px"; s.style.background="#aeefff";
               s.style.top="-20px"; s.style.animation = `dropDown ${Math.random()*1+1}s linear infinite`;
-            } else if(isFoggy) {
-              s.style.width="4px"; s.style.height="4px"; s.style.top=Math.random()*100+"%";
-              s.style.background="white"; s.style.filter="blur(1px)";
+            } else if(c.weathercode === 45 || c.weathercode === 48) {
+              s.style.width="4px"; s.style.height="4px"; s.style.background="white"; s.style.filter="blur(1px)";
               s.style.animation = `floatUp ${Math.random()*8+10}s linear infinite`;
             } else {
               s.style.width="2px"; s.style.height="2px"; s.style.top=Math.random()*100+"%";
@@ -173,10 +179,8 @@
             pCont.appendChild(s);
           }
 
-          // FLASH
           document.getElementById("flash").style.animation = (c.weathercode >= 95) ? "flashScreen 3s infinite" : "none";
 
-          // SEMANA
           const week = document.getElementById("week");
           week.innerHTML = "";
           for(let i=0; i<6; i++){
@@ -185,7 +189,7 @@
             col.className = "day-col";
             col.innerHTML = `
               <span class="day-label">${i===0?"Hoy":days[d.getDay()]}</span>
-              ${getIconHtml(data.daily.weathercode[i])}
+              ${getIconHtml(data.daily.weathercode[i], false)}
               <span class="temp-label-mm">${Math.round(data.daily.temperature_2m_min[i])}°/${Math.round(data.daily.temperature_2m_max[i])}°</span>
             `;
             week.appendChild(col);
@@ -196,11 +200,11 @@
       function init(){
         setInterval(() => {
           document.getElementById("date").innerText = new Date().toLocaleString('es-AR', {
-            day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit'
+            day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit', second:'2-digit'
           });
         }, 1000);
         updateWeather();
-        setInterval(updateWeather, 60000);
+        setInterval(updateWeather, 60000); // Actualización cada minuto
       }
       init();
     })();
