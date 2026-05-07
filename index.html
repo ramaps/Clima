@@ -3,210 +3,213 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clima Bandera Pro - Ultra Glass Slab</title>
+    <title>Clima Bandera Pro - Vidrio Encima</title>
 </head>
 <body style="background: #101010; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; perspective: 2500px; padding: 20px; box-sizing: border-box;">
 
-<div id="weather-pro">
-  <style>
-    #weather-pro {
-      width: 100%; max-width: 320px; height: 560px;
-      border-radius: 25px; padding: 20px; color: white;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      position: relative; overflow: hidden;
-      
-      /* --- EFECTO DE BLOQUE DE VIDRIO ULTRA GRUESO --- */
-      backdrop-filter: blur(40px);
-      -webkit-backdrop-filter: blur(40px);
-      
-      /* Bordes nítidos frontales */
-      border-top: 1.5px solid rgba(255, 255, 255, 0.6);
-      border-left: 1.5px solid rgba(255, 255, 255, 0.4);
-      border-right: 1px solid rgba(0, 0, 0, 0.2);
-      border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+<!-- CONTENEDOR QUE AGRUPA EL CLIMA + VIDRIO -->
+<div class="glass-container" style="position: relative; width: 100%; max-width: 320px; height: 560px; transform: rotateY(-20deg) rotateX(12deg) rotateZ(1.5deg); transform-style: preserve-3d;">
 
-      /* Inclinación ajustada para ver más el lateral derecho e inferior */
-      transform: rotateY(-20deg) rotateX(12deg) rotateZ(1.5deg);
-      transform-style: preserve-3d;
-      
-      /* --- EL CANTO: 15 CAPAS DE EXTRUSIÓN PARA MÁXIMO CUERPO --- */
-      box-shadow: 
-        /* Capas físicas del grosor (Canto) */
-        1px 1px 0px rgba(255, 255, 255, 0.3),
-        2px 2px 0px rgba(0, 0, 0, 0.2),
-        3px 3px 0px rgba(255, 255, 255, 0.1),
-        4px 4px 0px rgba(0, 0, 0, 0.2),
-        5px 5px 0px rgba(255, 255, 255, 0.05),
-        6px 6px 0px rgba(0, 0, 0, 0.25),
-        7px 7px 0px rgba(255, 255, 255, 0.05),
-        8px 8px 0px rgba(0, 0, 0, 0.3),
-        9px 9px 0px rgba(255, 255, 255, 0.03),
-        10px 10px 0px rgba(0, 0, 0, 0.35),
-        11px 11px 1px rgba(0, 0, 0, 0.4),
-        12px 12px 2px rgba(0, 0, 0, 0.45),
-        13px 13px 3px rgba(0, 0, 0, 0.5),
-        14px 14px 4px rgba(0, 0, 0, 0.55),
-        15px 15px 5px rgba(0, 0, 0, 0.6),
+  <!-- CAPA 1: TU CARD DEL CLIMA ORIGINAL - QUEDA DE FONDO -->
+  <div id="weather-pro">
+    <style>
+      #weather-pro {
+        width: 100%; height: 100%;
+        border-radius: 25px; color: white;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        z-index: 1;
+      }
 
-        /* Luz interna en la base para volumen */
-        inset 0 -25px 50px rgba(255, 255, 255, 0.2), 
-        inset 0 -1.5px 0px rgba(255, 255, 255, 0.8), /* Filo brillante inferior */
-        
-        /* Definición interna */
-        inset 5px 5px 20px rgba(0, 0, 0, 0.2),
+      /* Fondos según clima - estos son tu fondo real */
+      #weather-pro.day { background: linear-gradient(160deg, rgba(86, 204, 242, 1), rgba(47, 128, 237, 1)); }
+      #weather-pro.night { background: linear-gradient(160deg, rgba(15, 32, 39, 1), rgba(44, 83, 100, 1)); }
+      #weather-pro.foggy { background: linear-gradient(160deg, rgba(117, 127, 154, 1), rgba(215, 221, 232, 1)); }
 
-        /* Sombra proyectada en el suelo */
-        60px 80px 100px rgba(0,0,0,0.8);
-      
-      /* --- FIN EFECTO CANTO --- */
+  .content-sandwich {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        padding: 20px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+      }
+  .moon { width: 35px; height: 35px; background: transparent; border-radius: 50%; box-shadow: 9px 9px 0 0 #f1f1f1; transform: rotate(-20deg) translateX(-8px); margin-bottom: 10px; }
+  .lightning-flash { position: absolute; inset: 0; background: rgba(255,255,255,0.3); opacity: 0; pointer-events: none; z-index: 10; }
+      @keyframes flashScreen { 0%, 92%, 100% { opacity: 0; } 94%, 97% { opacity: 0.7; } }
+  .particles { position: absolute; top: 0; left: 0; width: 100%; height: 350px; overflow: hidden; z-index: 1; pointer-events: none; }
+  .particles span { position: absolute; opacity: 0.5; background: white; border-radius: 50%; }
+      @keyframes floatUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(-200px); opacity: 0.5; } }
+      @keyframes dropDown { from { transform: translateY(-20px); } to { transform: translateY(400px); } }
+  .current { text-align: center; z-index: 2; position: relative; flex: 1; }
+  .temp-main { font-size: 52px; font-weight: 700; margin: 0; line-height: 1; }
+  .st-label { font-size: 13px; opacity: 0.8; font-weight: 600; margin-bottom: 10px; }
+  .desc-text { font-size: 16px; font-weight: 700; margin-bottom: 10px; text-transform: capitalize; }
+  .extra-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0; background: rgba(0,0,0,0.15); padding: 10px; border-radius: 18px; }
+  .data-item { display: flex; flex-direction: column; align-items: center; }
+  .data-val { font-size: 13px; font-weight: 700; }
+  .data-lab { font-size: 9px; text-transform: uppercase; opacity: 0.6; font-weight: 800; letter-spacing: 0.3px; }
+  .wind-info { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12px; font-weight: 600; margin-top: 5px; }
+  .wind-arrow { width: 13px; height: 13px; fill: white; transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1); }
+      #alert-box { font-size: 10px; font-weight: 800; text-transform: uppercase; margin-top: 8px; letter-spacing: 0.5px; }
+  .alert-active { color: #ffeb3b; animation: pulseAlert 2s infinite; text-shadow: 0 0 5px rgba(0,0,0,0.3); }
+  .alert-stable { color: rgba(255,255,255,0.3); }
+  .week { display: flex; justify-content: space-between; margin-top: auto; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.2); z-index: 2; position: relative; }
+  .day-col { display: flex; flex-direction: column; align-items: center; flex: 1; gap: 1px; }
+  .icon-box { height: 42px; width: 42px; display: flex; align-items: center; justify-content: center; position: relative; transform: scale(0.8); }
+  .sun { width: 38px; height: 38px; background: radial-gradient(circle, #fff176, #fbc02d); border-radius: 50%; box-shadow: 0 0 20px rgba(255,255,0,0.5); }
+  .cloud { width: 40px; height: 22px; background: white; border-radius: 20px; position: relative; z-index: 3; }
+  .cloud::before { content: ""; position: absolute; width: 22px; height: 22px; background: white; border-radius: 50%; top: -10px; left: 6px; }
+  .rain-container { position: absolute; top: 28px; left: 50%; transform: translateX(-50%); width: 34px; display: flex; justify-content: space-between; z-index: 2; }
+  .rain-drop { width: 2px; height: 8px; background: #aeefff; border-radius: 2px; animation: rainAnimate 0.8s linear infinite; }
+      @keyframes rainAnimate { from { transform: translateY(0); opacity: 1; } to { transform: translateY(18px); opacity: 0; } }
+  .bolt-svg { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); width: 16px; height: 20px; fill: #ffeb3b; opacity: 0; animation: lightningFlash 3s infinite; z-index: 4; }
+  .day-label { font-size: 10px; font-weight: 700; opacity: 0.9; text-transform: uppercase; }
+  .date-sub { font-size: 9px; opacity: 0.6; font-weight: 600; margin-bottom: 2px; }
+  .temp-label-mm { font-size: 10px; font-weight: 600; margin-top: 2px; }
+      @keyframes pulseAlert { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+      @keyframes lightningFlash { 0%, 90%, 100% { opacity: 0; } 92%, 95% { opacity: 1; } }
+    </style>
 
-      display: flex; flex-direction: column;
-      box-sizing: border-box; transition: all 0.5s ease;
-    }
+    <div class="content-sandwich">
+      <div class="lightning-flash" id="flash"></div>
+      <div class="particles" id="particles"></div>
 
-    #weather-pro::before {
-      content: "";
-      position: absolute;
-      top: -50%; left: -60%;
-      width: 200%; height: 200%;
-      background: linear-gradient(135deg, transparent, rgba(255,255,255,0.08) 40%, rgba(255,255,255,0.18) 50%, transparent 60%);
-      transform: rotate(-10deg);
-      pointer-events: none;
-      z-index: 0;
-    }
+      <div class="current">
+        <h3 style="margin:0; font-size: 18px;">Bandera, Sgo. del Estero</h3>
+        <p id="date" style="font-size: 11px; opacity: 0.7; height: 14px; margin-bottom: 10px;"></p>
 
-    #weather-pro.day { background: linear-gradient(160deg, rgba(86, 204, 242, 0.7), rgba(47, 128, 237, 0.7)); }
-    #weather-pro.night { background: linear-gradient(160deg, rgba(15, 32, 39, 0.8), rgba(32, 58, 67, 0.8), rgba(44, 83, 100, 0.8)); }
-    #weather-pro.foggy { background: linear-gradient(160deg, rgba(117, 127, 154, 0.8), rgba(215, 221, 232, 0.8)); color: #333; }
-    
-    .moon { width: 35px; height: 35px; background: transparent; border-radius: 50%; box-shadow: 9px 9px 0 0 #f1f1f1; transform: rotate(-20deg) translateX(-8px); margin-bottom: 10px; }
-    .lightning-flash { position: absolute; inset: 0; background: rgba(255,255,255,0.3); opacity: 0; pointer-events: none; z-index: 10; }
-    @keyframes flashScreen { 0%, 92%, 100% { opacity: 0; } 94%, 97% { opacity: 0.7; } }
-    .particles { position: absolute; top: 0; left: 0; width: 100%; height: 350px; overflow: hidden; z-index: 1; pointer-events: none; }
-    .particles span { position: absolute; opacity: 0.5; background: white; border-radius: 50%; }
-    @keyframes floatUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(-200px); opacity: 0.5; } }
-    @keyframes dropDown { from { transform: translateY(-20px); } to { transform: translateY(400px); } }
-    .current { text-align: center; z-index: 2; position: relative; flex: 1; }
-    .temp-main { font-size: 52px; font-weight: 700; margin: 0; line-height: 1; }
-    .st-label { font-size: 13px; opacity: 0.8; font-weight: 600; margin-bottom: 10px; }
-    .desc-text { font-size: 16px; font-weight: 700; margin-bottom: 10px; text-transform: capitalize; }
-    .extra-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0; background: rgba(0,0,0,0.15); padding: 10px; border-radius: 18px; }
-    .data-item { display: flex; flex-direction: column; align-items: center; }
-    .data-val { font-size: 13px; font-weight: 700; }
-    .data-lab { font-size: 9px; text-transform: uppercase; opacity: 0.6; font-weight: 800; letter-spacing: 0.3px; }
-    .wind-info { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12px; font-weight: 600; margin-top: 5px; }
-    .wind-arrow { width: 13px; height: 13px; fill: white; transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1); }
-    #alert-box { font-size: 10px; font-weight: 800; text-transform: uppercase; margin-top: 8px; letter-spacing: 0.5px; }
-    .alert-active { color: #ffeb3b; animation: pulseAlert 2s infinite; text-shadow: 0 0 5px rgba(0,0,0,0.3); }
-    .alert-stable { color: rgba(255,255,255,0.3); }
-    .week { display: flex; justify-content: space-between; margin-top: auto; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.2); z-index: 2; position: relative; }
-    .day-col { display: flex; flex-direction: column; align-items: center; flex: 1; gap: 1px; }
-    .icon-box { height: 42px; width: 42px; display: flex; align-items: center; justify-content: center; position: relative; transform: scale(0.8); }
-    .sun { width: 38px; height: 38px; background: radial-gradient(circle, #fff176, #fbc02d); border-radius: 50%; box-shadow: 0 0 20px rgba(255,255,0,0.5); }
-    .cloud { width: 40px; height: 22px; background: white; border-radius: 20px; position: relative; z-index: 3; }
-    .cloud::before { content: ""; position: absolute; width: 22px; height: 22px; background: white; border-radius: 50%; top: -10px; left: 6px; }
-    .rain-container { position: absolute; top: 28px; left: 50%; transform: translateX(-50%); width: 34px; display: flex; justify-content: space-between; z-index: 2; }
-    .rain-drop { width: 2px; height: 8px; background: #aeefff; border-radius: 2px; animation: rainAnimate 0.8s linear infinite; }
-    @keyframes rainAnimate { from { transform: translateY(0); opacity: 1; } to { transform: translateY(18px); opacity: 0; } }
-    .bolt-svg { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); width: 16px; height: 20px; fill: #ffeb3b; opacity: 0; animation: lightningFlash 3s infinite; z-index: 4; }
-    .day-label { font-size: 10px; font-weight: 700; opacity: 0.9; text-transform: uppercase; }
-    .date-sub { font-size: 9px; opacity: 0.6; font-weight: 600; margin-bottom: 2px; }
-    .temp-label-mm { font-size: 10px; font-weight: 600; margin-top: 2px; }
-  </style>
+        <div id="main-icon" style="display:flex; justify-content:center; transform: scale(1.4); margin-bottom: 5px;"></div>
+        <div class="desc-text" id="desc">Sincronizando...</div>
 
-  <div class="lightning-flash" id="flash"></div>
-  <div class="particles" id="particles"></div>
+        <div class="temp-main" id="temp">--°</div>
+        <div class="st-label" id="st">S.T. --°</div>
 
-  <div class="current">
-    <h3 style="margin:0; font-size: 18px;">Bandera, Sgo. del Estero</h3>
-    <p id="date" style="font-size: 11px; opacity: 0.7; height: 14px; margin-bottom: 10px;"></p>
-    
-    <div id="main-icon" style="display:flex; justify-content:center; transform: scale(1.4); margin-bottom: 5px;"></div>
-    <div class="desc-text" id="desc">Sincronizando...</div>
-    
-    <div class="temp-main" id="temp">--°</div>
-    <div class="st-label" id="st">S.T. --°</div>
-    
-    <div class="extra-grid">
-      <div class="data-item"><span class="data-val" id="hum">--%</span><span class="data-lab">Humedad</span></div>
-      <div class="data-item"><span class="data-val" id="prob">--%</span><span class="data-lab">Lluvia</span></div>
-      <div class="data-item"><span class="data-val" id="uv">--</span><span class="data-lab">UV</span></div>
-      <div class="data-item"><span class="data-val" id="mm">--/--</span><span class="data-lab">Mín/Máx</span></div>
+        <div class="extra-grid">
+          <div class="data-item"><span class="data-val" id="hum">--%</span><span class="data-lab">Humedad</span></div>
+          <div class="data-item"><span class="data-val" id="prob">--%</span><span class="data-lab">Lluvia</span></div>
+          <div class="data-item"><span class="data-val" id="uv">--</span><span class="data-lab">UV</span></div>
+          <div class="data-item"><span class="data-val" id="mm">--/--</span><span class="data-lab">Mín/Máx</span></div>
+        </div>
+
+        <div class="wind-info">
+          <svg class="wind-arrow" id="wind-dir" viewBox="0 0 24 24"><path d="M12 2L4.5 20.29l.71L12 18l6.79 3.71-.71z"/></svg>
+          <span id="wind-speed">-- km/h</span>
+          <span id="wind-cardinal" style="opacity: 0.8; font-size: 11px;">--</span>
+        </div>
+
+        <div id="alert-box" class="alert-stable">Condiciones estables</div>
+      </div>
+
+      <div class="week" id="week"></div>
     </div>
-
-    <div class="wind-info">
-      <svg class="wind-arrow" id="wind-dir" viewBox="0 0 24 24"><path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/></svg>
-      <span id="wind-speed">-- km/h</span>
-      <span id="wind-cardinal" style="opacity: 0.8; font-size: 11px;">--</span>
-    </div>
-    
-    <div id="alert-box" class="alert-stable">Condiciones estables</div>
   </div>
 
-  <div class="week" id="week"></div>
+  <!-- CAPA 2: VIDRIO TRANSPARENTE - CANTO SUTIL -->
+  <div class="glass-slab">
+    <style>
+   .glass-slab {
+        position: absolute;
+        inset: 0;
+        border-radius: 25px;
+        z-index: 10;
+        pointer-events: none;
+        /* VIDRIO CASI INVISIBLE */
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(0.1px) saturate(100%);
+        -webkit-backdrop-filter: blur(1.5px) saturate(105%);
+        border: 0.5px solid rgba(255, 255, 255, 0.8);
+        transform: translateZ(18px);
+        /* CANTO APENAS DIFUMINADO */
+        box-shadow:
+          1px 1px 0px rgba(255,255,255,0.50),
+          2px 2px 0px rgba(255,255,255,0.30),
+          3px 3px 0px rgba(255,255,255,0.20),
+          15px 25px 35px rgba(0,0,0,0.35);
+      }
 
-  <script>
-    (function(){
-      const lat = -28.8833, lon = -62.2667;
-      const days = ["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
-      function getDesc(code) { const map = { 0: "Despejado", 1: "Mayormente Despejado", 2: "Parcialmente Nublado", 3: "Nublado", 45: "Niebla", 48: "Niebla con Escarcha", 51: "Llovizna Ligera", 61: "Lluvia Ligera", 63: "Lluvia Moderada", 80: "Chubascos Ligeros", 95: "Tormenta", 96: "Tormenta Fuerte" }; return map[code] || "Variable"; }
-      function getCardinal(angle) { const directions = ["N", "NE", "E", "SE", "S", "SO", "O", "NO"]; return directions[Math.round(angle / 45) % 8]; }
-      function getIconHtml(code, isNight){
-        const rain = `<div class="rain-container"><div class="rain-drop" style="animation-delay:0.1s"></div><div class="rain-drop" style="animation-delay:0.3s"></div><div class="rain-drop" style="animation-delay:0.5s"></div></div>`;
-        const bolt = `<svg class="bolt-svg" viewBox="0 0 24 24"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>`;
-        if(code === 0) return isNight ? `<div class="icon-box"><div class="moon"></div></div>` : `<div class="icon-box"><div class="sun"></div></div>`;
-        if(code >= 95) return `<div class="icon-box"><div class="cloud"></div>${rain}${bolt}</div>`;
-        if(code >= 51) return `<div class="icon-box"><div class="cloud"></div>${rain}</div>`;
-        return `<div class="icon-box"><div class="cloud"></div></div>`;
+   .glass-slab::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 25px;
+        /* Reflejo muy sutil */
+        background: linear-gradient(
+          135deg,
+          rgba(255,255,255,0.06) 0%,
+          transparent 60%,
+          rgba(255,255,255,0.03) 100%
+        );
       }
-      async function updateWeather(){
-        try {
-          const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,uv_index_max,precipitation_probability_max&timezone=auto`);
-          const data = await res.json();
-          const c = data.current; const d = data.daily; const h = new Date().getHours(); const isNight = h < 6 || h >= 19;
-          document.getElementById("temp").innerText = Math.round(c.temperature_2m) + "°";
-          document.getElementById("st").innerText = "S.T. " + Math.round(c.apparent_temperature) + "°";
-          document.getElementById("desc").innerText = getDesc(c.weather_code);
-          document.getElementById("hum").innerText = c.relative_humidity_2m + "%";
-          document.getElementById("prob").innerText = d.precipitation_probability_max[0] + "%";
-          document.getElementById("uv").innerText = d.uv_index_max[0];
-          document.getElementById("mm").innerText = `${Math.round(d.temperature_2m_min[0])}°/${Math.round(d.temperature_2m_max[0])}°`;
-          document.getElementById("wind-speed").innerText = Math.round(c.wind_speed_10m) + " km/h";
-          document.getElementById("wind-cardinal").innerText = `(${getCardinal(c.wind_direction_10m)})`;
-          document.getElementById("wind-dir").style.transform = `rotate(${(c.wind_direction_10m + 180) % 360}deg)`;
-          document.getElementById("main-icon").innerHTML = getIconHtml(c.weather_code, isNight);
-          const alertBox = document.getElementById("alert-box");
-          let isA = (c.wind_speed_10m > 50 || c.temperature_2m > 40 || c.weather_code >= 95);
-          alertBox.innerText = isA ? "⚠ Alerta Meteorológica" : "Condiciones estables";
-          alertBox.className = isA ? "alert-active" : "alert-stable";
-          const card = document.getElementById("weather-pro");
-          card.classList.remove('day', 'night', 'foggy');
-          if(c.weather_code === 45 || c.weather_code === 48) card.classList.add('foggy');
-          else card.classList.add(isNight ? 'night' : 'day');
-          const pCont = document.getElementById("particles"); pCont.innerHTML = "";
-          for(let i=0; i<25; i++){
-            let s = document.createElement("span"); s.style.left = Math.random()*100+"%";
-            if(c.weather_code >= 51){ s.style.width="1px"; s.style.height="15px"; s.style.background="#aeefff"; s.style.top="-20px"; s.style.animation = `dropDown ${Math.random()*0.5+0.5}s linear infinite`; }
-            else { s.style.width="2px"; s.style.height="2px"; s.style.top=Math.random()*100+"%"; s.style.animation = `floatUp ${Math.random()*3+5}s linear infinite`; }
-            pCont.appendChild(s);
-          }
-          document.getElementById("flash").style.animation = (c.weather_code >= 95) ? "flashScreen 3s infinite" : "none";
-          const week = document.getElementById("week"); week.innerHTML = "";
-          for(let i=0; i<6; i++){
-            const dayDate = new Date(); dayDate.setDate(dayDate.getDate()+i);
-            const dateFormatted = dayDate.toLocaleDateString('es-AR', {day:'2-digit', month:'2-digit'});
-            const col = document.createElement("div"); col.className = "day-col";
-            col.innerHTML = `<span class="day-label">${i===0?"Hoy":days[dayDate.getDay()]}</span><span class="date-sub">${dateFormatted}</span>${getIconHtml(d.weather_code[i], false)}<span class="temp-label-mm">${Math.round(d.temperature_2m_min[i])}°/${Math.round(d.temperature_2m_max[i])}°</span>`;
-            week.appendChild(col);
-          }
-        } catch(e){ console.error(e); }
-      }
-      setInterval(() => {
-        document.getElementById("date").innerText = new Date().toLocaleString('es-AR', { day:'2-digit', month:'2-digit', year: 'numeric', hour:'2-digit', minute:'2-digit', second: '2-digit', hour12: false });
-      }, 1000);
-      updateWeather(); setInterval(updateWeather, 60000);
-    })();
-  </script>
+    </style>
+  </div>
+
 </div>
+
+<script>
+  (function(){
+    const lat = -28.8833, lon = -62.2667;
+    const days = ["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
+    function getDesc(code) { const map = { 0: "Despejado", 1: "Mayormente Despejado", 2: "Parcialmente Nublado", 3: "Nublado", 45: "Niebla", 48: "Niebla con Escarcha", 51: "Llovizna Ligera", 61: "Lluvia Ligera", 63: "Lluvia Moderada", 80: "Chubascos Ligeros", 95: "Tormenta", 96: "Tormenta Fuerte" }; return map[code] || "Variable"; }
+    function getCardinal(angle) { const directions = ["N", "NE", "E", "SE", "S", "SO", "O", "NO"]; return directions[Math.round(angle / 45) % 8]; }
+    function getIconHtml(code, isNight){
+      const rain = `<div class="rain-container"><div class="rain-drop" style="animation-delay:0.1s"></div><div class="rain-drop" style="animation-delay:0.3s"></div><div class="rain-drop" style="animation-delay:0.5s"></div></div>`;
+      const bolt = `<svg class="bolt-svg" viewBox="0 0 24 24"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>`;
+      if(code === 0) return isNight? `<div class="icon-box"><div class="moon"></div></div>` : `<div class="icon-box"><div class="sun"></div></div>`;
+      if(code >= 95) return `<div class="icon-box"><div class="cloud"></div>${rain}${bolt}</div>`;
+      if(code >= 51) return `<div class="icon-box"><div class="cloud"></div>${rain}</div>`;
+      return `<div class="icon-box"><div class="cloud"></div></div>`;
+    }
+    async function updateWeather(){
+      try {
+        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,uv_index_max,precipitation_probability_max&timezone=auto`);
+        const data = await res.json();
+        const c = data.current; const d = data.daily; const h = new Date().getHours(); const isNight = h < 6 || h >= 19;
+        document.getElementById("temp").innerText = Math.round(c.temperature_2m) + "°";
+        document.getElementById("st").innerText = "S.T. " + Math.round(c.apparent_temperature) + "°";
+        document.getElementById("desc").innerText = getDesc(c.weather_code);
+        document.getElementById("hum").innerText = c.relative_humidity_2m + "%";
+        document.getElementById("prob").innerText = d.precipitation_probability_max[0] + "%";
+        document.getElementById("uv").innerText = d.uv_index_max[0];
+        document.getElementById("mm").innerText = `${Math.round(d.temperature_2m_min[0])}°/${Math.round(d.temperature_2m_max[0])}°`;
+        document.getElementById("wind-speed").innerText = Math.round(c.wind_speed_10m) + " km/h";
+        document.getElementById("wind-cardinal").innerText = `(${getCardinal(c.wind_direction_10m)})`;
+        document.getElementById("wind-dir").style.transform = `rotate(${(c.wind_direction_10m + 180) % 360}deg)`;
+        document.getElementById("main-icon").innerHTML = getIconHtml(c.weather_code, isNight);
+        const alertBox = document.getElementById("alert-box");
+        let isA = (c.wind_speed_10m > 50 || c.temperature_2m > 40 || c.weather_code >= 95);
+        alertBox.innerText = isA? "⚠ Alerta Meteorológica" : "Condiciones estables";
+        alertBox.className = isA? "alert-active" : "alert-stable";
+        const card = document.getElementById("weather-pro");
+        card.classList.remove('day', 'night', 'foggy');
+        if(c.weather_code === 45 || c.weather_code === 48) card.classList.add('foggy');
+        else card.classList.add(isNight? 'night' : 'day');
+        const pCont = document.getElementById("particles"); pCont.innerHTML = "";
+        for(let i=0; i<25; i++){
+          let s = document.createElement("span"); s.style.left = Math.random()*100+"%";
+          if(c.weather_code >= 51){ s.style.width="1px"; s.style.height="15px"; s.style.background="#aeefff"; s.style.top="-20px"; s.style.animation = `dropDown ${Math.random()*0.5+0.5}s linear infinite`; }
+          else { s.style.width="2px"; s.style.height="2px"; s.style.top=Math.random()*100+"%"; s.style.animation = `floatUp ${Math.random()*3+5}s linear infinite`; }
+          pCont.appendChild(s);
+        }
+        document.getElementById("flash").style.animation = (c.weather_code >= 95)? "flashScreen 3s infinite" : "none";
+        const week = document.getElementById("week"); week.innerHTML = "";
+        for(let i=0; i<6; i++){
+          const dayDate = new Date(); dayDate.setDate(dayDate.getDate()+i);
+          const dateFormatted = dayDate.toLocaleDateString('es-AR', {day:'2-digit', month:'2-digit'});
+          const col = document.createElement("div"); col.className = "day-col";
+          col.innerHTML = `<span class="day-label">${i===0?"Hoy":days[dayDate.getDay()]}</span><span class="date-sub">${dateFormatted}</span>${getIconHtml(d.weather_code[i], false)}<span class="temp-label-mm">${Math.round(d.temperature_2m_min[i])}°/${Math.round(d.temperature_2m_max[i])}°</span>`;
+          week.appendChild(col);
+        }
+      } catch(e){ console.error(e); }
+    }
+    setInterval(() => {
+      document.getElementById("date").innerText = new Date().toLocaleString('es-AR', { day:'2-digit', month:'2-digit', year: 'numeric', hour:'2-digit', minute:'2-digit', second: '2-digit', hour12: false });
+    }, 1000);
+    updateWeather(); setInterval(updateWeather, 60000);
+  })();
+</script>
 </body>
 </html>
